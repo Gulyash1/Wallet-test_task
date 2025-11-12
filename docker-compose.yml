@@ -1,0 +1,26 @@
+services:
+  db:
+    container_name: "wallet_db"
+    image: "postgres:15"
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+  app:
+    container_name: "wallet_app"
+    build: .
+    command: uvicorn wallet.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/wallet
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    environment:
+      POSTGRES_HOST: db
+      DATABASE_URL: '${DATABASE_URL}'
+
+
